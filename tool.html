@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Free Court Deadline Calculator, Billable Time Tracker & Settlement
+      Calculator for Attorneys
+    </title>
+    <meta
+      name="description"
+      content="Free tools for US attorneys and paralegals: FRCP Rule 6 court deadline calculator, billable hours tracker with 6-minute rounding, and contingency settlement net-to-client calculator."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Libre+Caslon+Text:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --green: #173a32;
+        --green2: #0f2a24;
+        --brass: #a8782b;
+        --paper: #f4f6f5;
+        --line: #d5dbd8;
+        --ink: #1c2523;
+      }
+      body {
+        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+      }
+      h1,
+      h2,
+      h3,
+      .brand {
+        font-family: "Libre Caslon Text", Georgia, serif;
+      }
+      header {
+        background: var(--green);
+        color: #fff;
+        padding: 2.2rem 0 0;
+      }
+      header h1 {
+        font-size: clamp(1.7rem, 4vw, 2.5rem);
+        max-width: 20ch;
+        line-height: 1.2;
+      }
+      header p {
+        color: #c7d6d1;
+        max-width: 60ch;
+      }
+      .brand {
+        color: #e6c88f;
+        text-decoration: none;
+        font-size: 1.05rem;
+      }
+      .nav-tabs {
+        border: 0;
+        margin-top: 1.5rem;
+      }
+      .nav-tabs .nav-link {
+        color: #c7d6d1;
+        border: 0;
+        border-radius: 0.5rem 0.5rem 0 0;
+        padding: 0.75rem 1.2rem;
+        font-weight: 500;
+      }
+      .nav-tabs .nav-link.active {
+        background: var(--paper);
+        color: var(--green);
+        border-top: 3px solid var(--brass);
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 0.6rem;
+        padding: 1.5rem;
+      }
+      .form-label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--brass);
+        box-shadow: 0 0 0 0.2rem rgba(168, 120, 43, 0.25);
+      }
+      .btn-main {
+        background: var(--green);
+        color: #fff;
+        border: 0;
+        font-weight: 500;
+      }
+      .btn-main:hover {
+        background: var(--green2);
+        color: #fff;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 2rem;
+        padding: 0.2rem 0.8rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .chip:hover {
+        border-color: var(--brass);
+      }
+      .result {
+        border-left: 4px solid var(--brass);
+        background: #fbf7ef;
+        padding: 1.1rem 1.3rem;
+        border-radius: 0.3rem;
+      }
+      .result .big {
+        font-family: "Libre Caslon Text", serif;
+        font-size: clamp(1.4rem, 3.5vw, 2rem);
+        color: var(--green);
+      }
+      .net {
+        font-family: "Libre Caslon Text", serif;
+        font-size: 2rem;
+        color: var(--green);
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-size: 1.6rem;
+      }
+      .table {
+        font-size: 0.92rem;
+      }
+      small.note {
+        color: #5b6764;
+      }
+      footer {
+        font-size: 0.82rem;
+        color: #5b6764;
+      }
+      @media print {
+        header,
+        .no-print,
+        footer {
+          display: none !important;
+        }
+        .tab-pane {
+          display: block !important;
+          opacity: 1 !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="no-print">
+      <div class="container">
+        <a class="brand" href="#">Docket Desk</a>
+        <h1 class="mt-3 mb-2">Deadline, time, settlement. Done before your coffee cools.</h1>
+        <p>
+          The small calculations that eat your afternoon, done in seconds. Stop
+          counting days on a calendar and rebuilding the same spreadsheet. Get
+          your deadline, your billable total and your client’s net recovery on
+          one page. Free to use, with no account and no data stored on our
+          servers.
+        </p>
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <button
+              class="nav-link active"
+              data-bs-toggle="tab"
+              data-bs-target="#t1"
+              type="button"
+            >
+              Deadline calculator
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-bs-toggle="tab"
+              data-bs-target="#t2"
+              type="button"
+            >
+              Billable time
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-bs-toggle="tab"
+              data-bs-target="#t3"
+              type="button"
+            >
+              Settlement net
+            </button>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="container py-4">
+      <div class="tab-content">
+        <!-- DEADLINE -->
+        <div class="tab-pane fade show active" id="t1">
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="panel">
+                <h2 class="h4 mb-3">Court deadline calculator</h2>
+                <div class="mb-3">
+                  <label class="form-label" for="dTrigger"
+                    >Triggering event date</label
+                  >
+                  <input type="date" id="dTrigger" class="form-control" />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label" for="dDays">Number of days</label>
+                  <input
+                    type="number"
+                    id="dDays"
+                    class="form-control"
+                    min="1"
+                    value="21"
+                  />
+                </div>
+                <div class="mb-3 d-flex flex-wrap gap-2">
+                  <button
+                    class="chip"
+                    data-d="21"
+                    title="Answer to complaint, FRCP 12(a)(1)(A)(i)"
+                  >
+                    21 answer
+                  </button>
+                  <button
+                    class="chip"
+                    data-d="28"
+                    title="Post-trial motions, FRCP 50, 52, 59"
+                  >
+                    28 post-trial motion
+                  </button>
+                  <button
+                    class="chip"
+                    data-d="30"
+                    title="Notice of appeal, FRAP 4(a)(1)(A)"
+                  >
+                    30 notice of appeal
+                  </button>
+                  <button
+                    class="chip"
+                    data-d="60"
+                    title="Answer after waiver of service, FRCP 12(a)(1)(A)(ii)"
+                  >
+                    60 waived service
+                  </button>
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label class="form-label" for="dDir">Count</label>
+                    <select id="dDir" class="form-select">
+                      <option value="1">Days after the event</option>
+                      <option value="-1">Days before the event</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label" for="dType">Day type</label>
+                    <select id="dType" class="form-select">
+                      <option value="cal">Calendar days</option>
+                      <option value="court">Court days only</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="dMail" />
+                  <label class="form-check-label" for="dMail"
+                    >Served by mail or other non-electronic means (add 3 days,
+                    Rule 6(d))</label
+                  >
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="dExtra"
+                    >Extra closed dates (state holidays, court closures)</label
+                  >
+                  <input
+                    type="text"
+                    id="dExtra"
+                    class="form-control"
+                    placeholder="2026-11-03, 2026-12-24"
+                  />
+                  <small class="note"
+                    >Format YYYY-MM-DD, separated by commas.</small
+                  >
+                </div>
+                <button class="btn btn-main w-100" id="dGo">
+                  Calculate deadline
+                </button>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="panel" aria-live="polite">
+                <div id="dOut">
+                  <p class="mb-0 text-muted">
+                    Enter a triggering date and the number of days. The result
+                    shows the final deadline and any weekends or holidays that
+                    moved it.
+                  </p>
+                </div>
+              </div>
+              <p class="mt-3">
+                <small class="note"
+                  >Follows FRCP 6(a): the trigger day is excluded, every day is
+                  counted, and a deadline landing on a Saturday, Sunday or legal
+                  holiday moves to the next day that is not (earlier, when
+                  counting backward). Local rules, court orders and state rules
+                  can differ, so confirm every deadline against the governing
+                  rule.</small
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BILLING -->
+        <div class="tab-pane fade" id="t2">
+          <div class="row g-4">
+            <div class="col-lg-4">
+              <div class="panel">
+                <h2 class="h4 mb-3">Log time</h2>
+                <div class="text-center mb-3">
+                  <div class="timer" id="tClock">00:00:00</div>
+                  <button class="btn btn-sm btn-main" id="tToggle">
+                    Start timer
+                  </button>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label" for="bMatter">Client / matter</label
+                  ><input id="bMatter" class="form-control" />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label" for="bDesc">Description</label
+                  ><textarea
+                    id="bDesc"
+                    rows="2"
+                    class="form-control"
+                  ></textarea>
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-4">
+                    <label class="form-label" for="bMin">Minutes</label
+                    ><input
+                      type="number"
+                      id="bMin"
+                      min="1"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label" for="bRate">Rate ($/hr)</label
+                    ><input
+                      type="number"
+                      id="bRate"
+                      min="0"
+                      value="250"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label" for="bInc">Round up to</label>
+                    <select id="bInc" class="form-select">
+                      <option value="6">0.1 hr</option>
+                      <option value="15">0.25 hr</option>
+                      <option value="1">None</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-main w-100" id="bAdd">Add entry</button>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="panel">
+                <div
+                  class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2"
+                >
+                  <h2 class="h4 mb-0">Time entries</h2>
+                  <div class="no-print d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary" id="bCsv">
+                      Export CSV
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-secondary"
+                      onclick="window.print()"
+                    >
+                      Print
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" id="bClear">
+                      Clear all
+                    </button>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Matter</th>
+                        <th>Description</th>
+                        <th class="text-end">Hours</th>
+                        <th class="text-end">Amount</th>
+                        <th class="no-print"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="bBody"></tbody>
+                    <tfoot>
+                      <tr class="fw-semibold">
+                        <td colspan="2">Total</td>
+                        <td class="text-end" id="bHrs">0.00</td>
+                        <td class="text-end" id="bAmt">$0.00</td>
+                        <td class="no-print"></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <small class="note no-print"
+                  >Entries are saved only in this browser on this device.</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTLEMENT -->
+        <div class="tab-pane fade" id="t3">
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="panel">
+                <h2 class="h4 mb-3">Settlement net-to-client</h2>
+                <div class="mb-2">
+                  <label class="form-label" for="sGross"
+                    >Gross settlement ($)</label
+                  ><input
+                    type="number"
+                    id="sGross"
+                    min="0"
+                    class="form-control"
+                    value="100000"
+                  />
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-5">
+                    <label class="form-label" for="sFee">Fee (%)</label
+                    ><input
+                      type="number"
+                      id="sFee"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      class="form-control"
+                      value="33.33"
+                    />
+                  </div>
+                  <div class="col-7">
+                    <label class="form-label" for="sBasis"
+                      >Fee is calculated on</label
+                    >
+                    <select id="sBasis" class="form-select">
+                      <option value="g">Gross amount</option>
+                      <option value="n">Gross minus costs</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label" for="sCost"
+                    >Case costs advanced ($)</label
+                  ><input
+                    type="number"
+                    id="sCost"
+                    min="0"
+                    class="form-control"
+                    value="3500"
+                  />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label" for="sLien"
+                    >Medical liens and subrogation ($)</label
+                  ><input
+                    type="number"
+                    id="sLien"
+                    min="0"
+                    class="form-control"
+                    value="8000"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="sOther"
+                    >Other deductions ($)</label
+                  ><input
+                    type="number"
+                    id="sOther"
+                    min="0"
+                    class="form-control"
+                    value="0"
+                  />
+                </div>
+                <button class="btn btn-main w-100" id="sGo">Calculate</button>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="panel" id="sOut" aria-live="polite"></div>
+              <p class="mt-3">
+                <small class="note"
+                  >An estimate for client conversations. Fee rules, lien
+                  reductions and trust accounting vary by state, so verify
+                  against your fee agreement and bar rules.</small
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="container pb-4 no-print">
+      <hr />
+      <p>
+        These tools are for general information only and are not legal advice.
+        Always verify results against the applicable rules and court orders
+        before relying on them.
+      </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const money = (n) =>
+        n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      /* ---------- Deadline calculator ---------- */
+      const iso = (d) =>
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0");
+      const parse = (s) => {
+        const [p, q, r] = s.split("-").map(Number);
+        return new Date(p, q - 1, r, 12);
+      };
+      const addDays = (d, n) => {
+        const x = new Date(d);
+        x.setDate(x.getDate() + n);
+        return x;
+      };
+      const fmt = (d) =>
+        d.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      const short = (d) =>
+        d.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      function nth(y, m, wd, n) {
+        const f = new Date(y, m, 1, 12);
+        return new Date(
+          y,
+          m,
+          1 + ((wd - f.getDay() + 7) % 7) + 7 * (n - 1),
+          12,
+        );
+      }
+      function lastWd(y, m, wd) {
+        const l = new Date(y, m + 1, 0, 12);
+        return new Date(y, m, l.getDate() - ((l.getDay() - wd + 7) % 7), 12);
+      }
+      const hcache = {};
+      function holidays(y) {
+        if (hcache[y]) return hcache[y];
+        const list = [
+          ["New Year\u2019s Day", new Date(y, 0, 1, 12)],
+          ["Martin Luther King Jr. Day", nth(y, 0, 1, 3)],
+          ["Washington\u2019s Birthday", nth(y, 1, 1, 3)],
+          ["Memorial Day", lastWd(y, 4, 1)],
+          ["Juneteenth", new Date(y, 5, 19, 12)],
+          ["Independence Day", new Date(y, 6, 4, 12)],
+          ["Labor Day", nth(y, 8, 1, 1)],
+          ["Columbus Day", nth(y, 9, 1, 2)],
+          ["Veterans Day", new Date(y, 10, 11, 12)],
+          ["Thanksgiving Day", nth(y, 10, 4, 4)],
+          ["Christmas Day", new Date(y, 11, 25, 12)],
+        ];
+        const m = {};
+        list.forEach(([n, d]) => {
+          m[iso(d)] = n;
+          if (d.getDay() === 6) m[iso(addDays(d, -1))] = n + " (observed)";
+          if (d.getDay() === 0) m[iso(addDays(d, 1))] = n + " (observed)";
+        });
+        return (hcache[y] = m);
+      }
+      function offReason(d, extra) {
+        if (d.getDay() === 6) return "Saturday";
+        if (d.getDay() === 0) return "Sunday";
+        const k = iso(d);
+        if (holidays(d.getFullYear())[k]) return holidays(d.getFullYear())[k];
+        if (extra.has(k)) return "Court closure (your entry)";
+        return null;
+      }
+      function roll(d, dir, extra, notes) {
+        let r;
+        while ((r = offReason(d, extra))) {
+          notes.push(short(d) + " is " + r);
+          d = addDays(d, dir);
+        }
+        return d;
+      }
+      function calcDeadline() {
+        const t = $("dTrigger").value,
+          n = parseInt($("dDays").value, 10);
+        if (!t || !n || n < 1) {
+          $("dOut").innerHTML =
+            '<p class="text-danger mb-0">Enter a triggering date and a number of days of 1 or more.</p>';
+          return;
+        }
+        const dir = parseInt($("dDir").value, 10),
+          court = $("dType").value === "court",
+          mail = $("dMail").checked;
+        const extra = new Set(
+          $("dExtra")
+            .value.split(",")
+            .map((s) => s.trim())
+            .filter((s) => /^\d{4}-\d{2}-\d{2}$/.test(s)),
+        );
+        const start = parse(t),
+          notes = [];
+        let d = start;
+        if (court) {
+          let c = 0;
+          while (c < n) {
+            d = addDays(d, dir);
+            if (!offReason(d, extra)) c++;
+          }
+        } else {
+          d = addDays(start, dir * n);
+        }
+        const counted = d;
+        d = roll(d, dir, extra, notes);
+        let mailNote = "";
+        if (mail && dir === 1) {
+          const before = d;
+          d = roll(addDays(d, 3), dir, extra, notes);
+          mailNote = "Rule 6(d): 3 days added to " + short(before) + ".";
+        }
+        const verb = dir === 1 ? "after" : "before";
+        $("dOut").innerHTML =
+          '<div class="result"><div class="text-muted">Deadline</div><div class="big">' +
+          fmt(d) +
+          "</div></div>" +
+          '<dl class="row mt-3 mb-0"><dt class="col-sm-4">Triggering event</dt><dd class="col-sm-8">' +
+          fmt(start) +
+          "</dd>" +
+          '<dt class="col-sm-4">Period</dt><dd class="col-sm-8">' +
+          n +
+          " " +
+          (court ? "court" : "calendar") +
+          " days " +
+          verb +
+          " the event</dd>" +
+          '<dt class="col-sm-4">Day counted</dt><dd class="col-sm-8">' +
+          fmt(counted) +
+          "</dd>" +
+          (mailNote
+            ? '<dt class="col-sm-4">Mail service</dt><dd class="col-sm-8">' +
+              mailNote +
+              "</dd>"
+            : "") +
+          '<dt class="col-sm-4">Adjustments</dt><dd class="col-sm-8">' +
+          (notes.length
+            ? notes.map(esc).join("<br>")
+            : "None. The deadline falls on a regular court day.") +
+          "</dd></dl>";
+      }
+      $("dGo").onclick = calcDeadline;
+      document.querySelectorAll(".chip").forEach(
+        (c) =>
+          (c.onclick = () => {
+            $("dDays").value = c.dataset.d;
+            if ($("dTrigger").value) calcDeadline();
+          }),
+      );
+      $("dTrigger").value = iso(new Date());
+
+      /* ---------- Billable time ---------- */
+      let entries = [];
+      try {
+        entries = JSON.parse(localStorage.getItem("atk_entries") || "[]");
+      } catch (e) {}
+      const save = () => {
+        try {
+          localStorage.setItem("atk_entries", JSON.stringify(entries));
+        } catch (e) {}
+      };
+      function render() {
+        let th = 0,
+          ta = 0;
+        $("bBody").innerHTML = entries.length
+          ? entries
+              .map((e, i) => {
+                th += e.hours;
+                ta += e.amount;
+                return (
+                  "<tr><td>" +
+                  esc(e.matter) +
+                  "</td><td>" +
+                  esc(e.desc) +
+                  '</td><td class="text-end">' +
+                  e.hours.toFixed(2) +
+                  '</td><td class="text-end">' +
+                  money(e.amount) +
+                  '</td><td class="no-print text-end"><button class="btn btn-sm btn-link text-danger p-0" data-i="' +
+                  i +
+                  '" aria-label="Delete entry">Delete</button></td></tr>'
+                );
+              })
+              .join("")
+          : '<tr><td colspan="5" class="text-muted">No entries yet. Add your first time entry on the left.</td></tr>';
+        $("bHrs").textContent = th.toFixed(2);
+        $("bAmt").textContent = money(ta);
+      }
+      $("bAdd").onclick = () => {
+        const min = parseFloat($("bMin").value),
+          rate = parseFloat($("bRate").value) || 0,
+          inc = parseInt($("bInc").value, 10);
+        if (!min || min <= 0) {
+          $("bMin").focus();
+          return;
+        }
+        const hours = (Math.ceil(min / inc) * inc) / 60;
+        entries.push({
+          matter: $("bMatter").value || "Unassigned",
+          desc: $("bDesc").value,
+          hours,
+          amount: hours * rate,
+          date: iso(new Date()),
+        });
+        save();
+        render();
+        $("bDesc").value = "";
+        $("bMin").value = "";
+      };
+      $("bBody").onclick = (e) => {
+        const i = e.target.dataset.i;
+        if (i !== undefined) {
+          entries.splice(i, 1);
+          save();
+          render();
+        }
+      };
+      $("bClear").onclick = () => {
+        if (
+          entries.length &&
+          confirm("Delete all time entries? This cannot be undone.")
+        ) {
+          entries = [];
+          save();
+          render();
+        }
+      };
+      $("bCsv").onclick = () => {
+        const q = (v) => '"' + String(v).replace(/"/g, '""') + '"';
+        const csv = ["Date,Matter,Description,Hours,Amount"]
+          .concat(
+            entries.map((e) =>
+              [
+                e.date,
+                q(e.matter),
+                q(e.desc),
+                e.hours.toFixed(2),
+                e.amount.toFixed(2),
+              ].join(","),
+            ),
+          )
+          .join("\n");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        a.download = "time-entries.csv";
+        a.click();
+      };
+      let tInt = null,
+        tStart = 0;
+      $("tToggle").onclick = () => {
+        if (tInt) {
+          clearInterval(tInt);
+          tInt = null;
+          $("tToggle").textContent = "Start timer";
+          $("bMin").value = Math.max(
+            1,
+            Math.ceil((Date.now() - tStart) / 60000),
+          );
+          return;
+        }
+        tStart = Date.now();
+        $("tToggle").textContent = "Stop timer";
+        tInt = setInterval(() => {
+          const s = Math.floor((Date.now() - tStart) / 1000),
+            p = (v) => String(v).padStart(2, "0");
+          $("tClock").textContent =
+            p(Math.floor(s / 3600)) +
+            ":" +
+            p(Math.floor((s % 3600) / 60)) +
+            ":" +
+            p(s % 60);
+        }, 500);
+      };
+      render();
+
+      /* ---------- Settlement ---------- */
+      function calcSettle() {
+        const g = parseFloat($("sGross").value) || 0,
+          pct = parseFloat($("sFee").value) || 0,
+          c = parseFloat($("sCost").value) || 0,
+          l = parseFloat($("sLien").value) || 0,
+          o = parseFloat($("sOther").value) || 0;
+        const base = $("sBasis").value === "g" ? g : Math.max(0, g - c),
+          fee = (base * pct) / 100,
+          net = g - fee - c - l - o;
+        const row = (a, b, cls) =>
+          '<tr class="' +
+          (cls || "") +
+          '"><td>' +
+          a +
+          '</td><td class="text-end">' +
+          b +
+          "</td></tr>";
+        $("sOut").innerHTML =
+          '<div class="result mb-3"><div class="text-muted">Client receives</div><div class="net">' +
+          (net < 0 ? "-" : "") +
+          money(Math.abs(net)) +
+          "</div>" +
+          (g > 0
+            ? '<small class="note">' +
+              ((net / g) * 100).toFixed(1) +
+              "% of the gross settlement</small>"
+            : "") +
+          "</div>" +
+          (net < 0
+            ? '<p class="text-danger">Deductions exceed the settlement. Review costs and liens.</p>'
+            : "") +
+          '<table class="table mb-0">' +
+          row("Gross settlement", money(g)) +
+          row("Attorney fee (" + pct + "%)", "-" + money(fee)) +
+          row("Case costs", "-" + money(c)) +
+          row("Medical liens", "-" + money(l)) +
+          row("Other deductions", "-" + money(o)) +
+          row("Net to client", money(net), "fw-semibold") +
+          "</table>";
+      }
+      $("sGo").onclick = calcSettle;
+      calcSettle();
+    </script>
+  </body>
+</html>
